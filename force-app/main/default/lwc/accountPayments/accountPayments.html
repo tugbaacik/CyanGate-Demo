@@ -1,0 +1,80 @@
+<template>
+    <lightning-card title="Account Payments Manager" icon-name="standard:account">
+        <div class="slds-grid slds-wrap slds-p-around_medium">
+            
+            <div class="slds-col slds-size_1-of-4 slds-border_right slds-p-right_medium">
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Accounts</h3>
+                <lightning-datatable
+                    key-field="Id"
+                    data={accounts}
+                    columns={accountColumns}
+                    max-row-selection="1"
+                    onrowselection={handleAccountSelection}
+                    > 
+                </lightning-datatable>
+            </div>
+
+            <template if:true={selectedAccountId}>
+
+                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-border_right">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">
+                        Payments for {selectedAccountName} 
+                        ({payments.length} total)
+                    </h3>
+                    <template if:true={payments.length}>
+                        <lightning-datatable
+                            key-field="Id"
+                            data={payments}
+                            columns={paymentColumns}
+                            hide-checkbox-column>
+                        </lightning-datatable>
+                    </template>
+                    <template if:false={payments.length}>
+                        <p class="slds-text-align_center slds-text-color_weak slds-m-top_large">
+                            No payments found for this Account.
+                        </p>
+                    </p>
+                    </template>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-4 slds-p-left_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">Create New Payment</h3>
+                    <lightning-record-edit-form
+                        object-api-name="Payment__c"
+                        onsuccess={handlePaymentSuccess}
+                        onerror={handlePaymentError}>
+                        
+                        <lightning-input-field 
+                            field-name="Account__c"
+                            value={selectedAccountId}
+                            variant="label-hidden"
+                            class="slds-hide">
+                        </lightning-input-field>
+                        
+                        <lightning-input-field field-name="Name"></lightning-input-field> 
+                        <lightning-input-field field-name="Payment_Type__c"></lightning-input-field>
+                        <lightning-input-field field-name="Amount__c"></lightning-input-field>
+                        <lightning-input-field field-name="Due_Date__c"></lightning-input-field>
+                        <lightning-input-field field-name="Notes__c"></lightning-input-field>
+
+                        <div class="slds-m-top_medium">
+                            <lightning-button 
+                                variant="brand" 
+                                type="submit" 
+                                label="Create Payment">
+                            </lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </div>
+            </template>
+
+            <template if:false={selectedAccountId}>
+                <div class="slds-col slds-size_3-of-4 slds-text-align_center slds-m-top_large">
+                    <p class="slds-text-heading_medium slds-text-color_weak">
+                        👈 Select an Account from the list to view and create Payments.
+                    </p>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
